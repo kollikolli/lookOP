@@ -5,29 +5,53 @@ dummyData["neg"]={}
 dummyData["pos"]={}
 dummyData["neut"]={}
 
+curItem=0
+maxItems=1
+
+
+def next():
+    global curItem,maxItems
+    if curItem <maxItems:
+        curItem+=1
+    updateContent()
+
+def prev():
+    global curItem,maxItems
+    if curItem > 0:
+        curItem-=1
+    updateContent()
+
+def updateContent():
+    global curItem,dummyData
+    posTitle.set(dummyData["pos"]["user"][curItem]+" on "+dummyData["pos"]["date"][curItem])
+    posTweet.set(dummyData["pos"]["tweet"][curItem])
+    neutTitle.set(dummyData["neut"]["user"][curItem]+" on "+dummyData["neut"]["date"][curItem])
+    neutTweet.set(dummyData["neut"]["tweet"][curItem])
+    negTitle.set(dummyData["neg"]["user"][curItem]+" on "+dummyData["neg"]["date"][curItem])
+    negTweet.set(dummyData["neg"]["tweet"][curItem])
 
 def query():
-    global mainframe
+    global mainframe,posTitle,posTweet,neutTitle,neutTweet,negTitle,negTweet,dummyData
     if e.get().strip() == "IPad":
         dummyData = {}
 
         dummyData["neg"]={}
-        dummyData["neg"]["user"]=["FrankerZZ1992"]
-        dummyData["neg"]["tweet"]=["The IPad is troubling me so much"]
+        dummyData["neg"]["user"]=["FrankerZZ1992","Tony"]
+        dummyData["neg"]["tweet"]=["The IPad is troubling me so much","The IPad sucks ass"]
         dummyData["neg"]["rating"]=0.3
-        dummyData["neg"]["date"]=["March 21 2016"]
+        dummyData["neg"]["date"]=["March 21 2016","October 31 1999"]
 
         dummyData["pos"]={}
-        dummyData["pos"]["user"]=["Honker1234"]
-        dummyData["pos"]["tweet"]=["The NEW IPad IS AMAZING!!"]
+        dummyData["pos"]["user"]=["Honker1234","Hero"]
+        dummyData["pos"]["tweet"]=["The NEW IPad IS AMAZING!!","I LOOOVE the IPad"]
         dummyData["pos"]["rating"]=0.5
-        dummyData["pos"]["date"]=["March 23 2015"]
+        dummyData["pos"]["date"]=["March 23 2015","December 11 2011"]
 
         dummyData["neut"]={}
-        dummyData["neut"]["user"]=["Steven1231"]
-        dummyData["neut"]["tweet"]=["I am fine with the IPad"]
+        dummyData["neut"]["user"]=["Steven1231","Friend12"]
+        dummyData["neut"]["tweet"]=["I am fine with the IPad","IPad is okayish"]
         dummyData["neut"]["rating"]=0.2
-        dummyData["neut"]["date"]=["March 21 2016"]
+        dummyData["neut"]["date"]=["March 21 2016","April 1 2013"]
 
 
         if "rating" in dummyData["pos"] and "rating" in dummyData["neg"] and "rating" in dummyData["neut"]:            
@@ -53,26 +77,40 @@ def query():
             results = Frame(mainframe)
 
             postxt = Frame(results,bd=1,relief=GROOVE,background="lightgreen")
-            Label(postxt, text=dummyData["pos"]["user"][0]+" on "+dummyData["pos"]["date"][0],background="lightgreen").pack()
-            Label(postxt, text=dummyData["pos"]["tweet"][0],background="lightgreen").pack()
+
+            updateContent()
+
+            Label(postxt, textvariable=posTitle,background="lightgreen").pack()
+            Label(postxt, textvariable=posTweet,background="lightgreen").pack()
             postxt.pack(pady=(10,0))
 
             neuttxt = Frame(results,bd=1,relief=GROOVE,background="lightgrey")
-            Label(neuttxt, text=dummyData["neut"]["user"][0]+" on "+dummyData["neut"]["date"][0],background="lightgrey").pack()
-            Label(neuttxt, text=dummyData["neut"]["tweet"][0],background="lightgrey").pack()
+            Label(neuttxt, textvariable=neutTitle,background="lightgrey").pack()
+            Label(neuttxt, textvariable=neutTweet,background="lightgrey").pack()
             neuttxt.pack(pady=(10,0))
 
             negtxt = Frame(results,bd=1,relief=GROOVE,background="pink")
-            Label(negtxt, text=dummyData["neg"]["user"][0]+" on "+dummyData["neg"]["date"][0],background="pink").pack()
-            Label(negtxt, text=dummyData["neg"]["tweet"][0],background="pink").pack()
-            negtxt.pack(pady=(10,0))
+            Label(negtxt, textvariable=negTitle,background="pink").pack()
+            Label(negtxt, textvariable=negTweet,background="pink").pack()
+            negtxt.pack(pady=(10,15))
 
+            prevB=Button(results,text="Previous Results",command=prev)
+            nextB=Button(results,text="Next Results",command=next)
+            prevB.pack(side=LEFT)
+            nextB.pack(side=LEFT)
             results.pack()
 
 
 app= Tk()
 app.title("LookOP")
 app.geometry("500x325+30+30")
+
+posTitle=StringVar()
+posTweet=StringVar()
+neutTitle=StringVar()
+neutTweet=StringVar()
+negTitle=StringVar()
+negTweet=StringVar()
 
 mainframe=Frame(app)
 
