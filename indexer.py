@@ -93,9 +93,17 @@ class LookOP(object):
 
                         self.terms[token]['tweets'].append(tweet)
 
-        print self.terms['scotthamilton']
+#        print self.terms['scotthamilton']
 #        print self.terms['kindle']
 
+    def query(self, query):
+            search_query = self.tokenize(query)
+            for term in search_query:
+                print self.terms[term]
+                #TODO Add to a result list
+
+            #TODO sort result list by cosine similarity to query
+        #TODO transform result list to be usable by GUI
 
 def main(args):
     lookop=LookOP()
