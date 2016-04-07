@@ -191,8 +191,9 @@ class LookOP(object):
             self.docTfIdf(tf,idf)
             self.tfIdfQuery=self.tfIdf[numberOfTweets-1]
             del self.tfIdf[numberOfTweets-1]
-            numberOfTweets=-1
-
+            del listOfTweets[numberOfTweets-1]
+            numberOfTweets-=1
+                                #in order to access each tweet's grade* check result->term->tweets
             return
 
 
@@ -206,7 +207,7 @@ class LookOP(object):
 def main(args):
     lookop=LookOP()
     lookop.index("testdata.manual.2009.06.14.csv")
-    lookop.query("about Obama")
+    lookop.query("popular Obama")
     #lookop.index("training.1600000.processed.noemoticon.csv")
 
 if __name__ == "__main__":
