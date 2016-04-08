@@ -37,6 +37,7 @@ class LookOP(object):
                         tweet['date']=row[2]
                         tweet['text']=row[5]
                         tweet['user']=row[4]
+                        tweet['rating']=row[0]
     
                         self.terms[token]['tweets'].append(tweet)
 
@@ -59,6 +60,7 @@ class LookOP(object):
                         tweet['date']=row[2]
                         tweet['text']=row[5]
                         tweet['user']=row[4]
+                        tweet['rating']=row[0]
     
                         self.terms[token]['tweets'].append(tweet)
 
@@ -74,6 +76,7 @@ class LookOP(object):
                         tweet['date']=row[2]
                         tweet['text']=row[5]
                         tweet['user']=row[4]
+                        tweet['rating']=row[0]
 
                         self.terms[token]['tweets'].append(tweet)
 
@@ -96,6 +99,7 @@ class LookOP(object):
                         tweet['date']=row[2]
                         tweet['text']=row[5]
                         tweet['user']=row[4]
+                        tweet['rating']=row[0]
 
                         self.terms[token]['tweets'].append(tweet)
 
@@ -161,18 +165,20 @@ class LookOP(object):
             self.tfIdf={}
             listOfTweets=[]
             search_query = self.StemTokenizer(query)
-            score=0
+            score=1
 
             for term in search_query:
                 #print self.terms[term]
-                print self.calcualate_Score(term)
-                self.result[term]={}
-                self.result[term]["score"]=self.calcualate_Score(term)
-                self.result[term]["tweets"]=self.terms[term]["tweets"]
+                #print self.calcualate_Score(term)
+                self.result={}
+                score = score * self.calcualate_Score(term);
+                self.result["score"]=score
+                self.result["tweets"]=self.terms[term]["tweets"]
 
-                for tweet in self.result[term]['tweets']:
+                for tweet in self.result['tweets']:
                   listOfTweets.append(tweet["text"])
-            listOfTweets.append(query)
+            listOfTweets=list(set(listOfTweets)) #remove duplicates
+            listOfTweets.append(query)            
             for text in listOfTweets:
                 tokens=self.StemTokenizer(text)
                 tf[numberOfTweets]={}
@@ -193,10 +199,63 @@ class LookOP(object):
             del self.tfIdf[numberOfTweets-1]
             del listOfTweets[numberOfTweets-1]
             numberOfTweets-=1
-                                #in order to access each tweet's grade* check result->term->tweets
-            return
+            
+            self.order = {}
+            for i in range(numberOfTweets):
+                self.order[i] = self.euclidean(self.tfIdf[i],self.tfIdfQuery)
 
+            #print self.result
 
+            dummyData={}
+            dummyData["neg"]={}
+            dummyData["pos"]={}
+            dummyData["neut"]={}
+            dummyData["neg"]['tweet']=[]
+            dummyData["pos"]['tweet']=[]
+            dummyData["neut"]['tweet']=[]
+            dummyData["neg"]['user']=[]
+            dummyData["pos"]['user']=[]
+            dummyData["neut"]['user']=[]
+            dummyData["neg"]['date']=[]
+            dummyData["pos"]['date']=[]
+            dummyData["neut"]['date']=[]
+
+            for i in sorted(self.order,cmp=self.sort_ord):
+                if (self.result['tweets'][i]['rating'] is "4"):
+                    dummyData["pos"]['tweet'].append(self.result['tweets'][i]['text'])
+                    dummyData["pos"]['date'].append(self.result['tweets'][i]['date'])
+                    dummyData["pos"]['user'].append(self.result['tweets'][i]['user'])
+                      
+                if (self.result['tweets'][i]['rating'] is "2"):
+                    dummyData["neut"]['tweet'].append(self.result['tweets'][i]['text'])
+                    dummyData["neut"]['date'].append(self.result['tweets'][i]['date'])
+                    dummyData["neut"]['user'].append(self.result['tweets'][i]['user'])
+
+                if (self.result['tweets'][i]['rating'] is "0"):
+                    dummyData["neg"]['tweet'].append(self.result['tweets'][i]['text'])
+  
+                
+                    dummyData["neg"]['date'].append(self.result['tweets'][i]['date'])
+                    dummyData["neg"]['user'].append(self.result['tweets'][i]['user'])
+
+            dummyData["neg"]["rating"] = len(dummyData["neg"]['tweet']) / numberOfTweets;
+            dummyData["pos"]["rating"] = len(dummyData["pos"]['tweet']) / numberOfTweets;
+            dummyData["neut"]["rating"] = len(dummyData["neut"]['tweet']) / numberOfTweets;
+
+            return dummyData
+
+    def sort_ord(self,x,y):
+            z=self.order[x]-self.order[y]
+            if z>0.0:
+                return 1
+            else:
+                return -1
+
+    def euclidean(self,doc1, doc2):
+            dist=0
+            for term in doc1:
+                dist+= (doc1[term]-doc2[term])*(doc1[term]-doc2[term])
+            return math.sqrt(dist)
 
                 #TODO Add to a result list
 
