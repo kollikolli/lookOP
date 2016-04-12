@@ -166,14 +166,18 @@ class LookOP(object):
             listOfTweets=[]
             search_query = self.StemTokenizer(query)
             score=1
+            self.result={}
+            self.result["tweets"]=[]
 
             for term in search_query:
                 #print self.terms[term]
                 #print self.calcualate_Score(term)
-                self.result={}
+
                 score = score * self.calcualate_Score(term);
                 self.result["score"]=score
-                self.result["tweets"]=self.terms[term]["tweets"]
+#                print self.terms[term]["tweets"]
+                for item in self.terms[term]["tweets"]:
+                    self.result["tweets"].append(item)
 
                 for tweet in self.result['tweets']:
                   listOfTweets.append(tweet["text"])
